@@ -115,11 +115,11 @@
             <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
           </span>
           </span>
-
+          <hr>
           <span *ngIf="MyRole.role=='Assassin'">
             <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
           </span>
-
+          <hr>
           <span>
             <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
           </span>

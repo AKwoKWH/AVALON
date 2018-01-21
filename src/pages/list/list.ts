@@ -66,6 +66,7 @@ export class ListPage {
       for (var key in result) {
         console.log(result[key])
         if (result[key].status == "READY" || result[key].status == "SHOW"){
+        console.log(result[key].PlayerRole)
         count = count + 1
         }
       }

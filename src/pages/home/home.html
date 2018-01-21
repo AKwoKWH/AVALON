@@ -29,13 +29,13 @@
       </ion-item> 
 
       <ion-item>
-        <ion-label>奧伯倫(對邪惡方互不了解)</ion-label>
-        <ion-toggle [(ngModel)]="roomdata.Oberon" (ionChange)="GetRolesName()"></ion-toggle>
+        <ion-label>梅林(知道邪惡方)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Merlin" (ionChange)="GetRolesName()" disabled="true"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>刺客(刺客模式：只有刺客知道邪惡方)</ion-label>
-        <ion-toggle [(ngModel)]="roomdata.Assassin" (ionChange)="GetRolesName()"></ion-toggle>
+        <ion-label>奧伯倫(對邪惡方互不了解)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Oberon" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
       <ion-item>
@@ -53,9 +53,14 @@
         <ion-toggle [(ngModel)]="roomdata.Morgana" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
+      <ion-item>
+        <ion-label>刺客模式：只有刺客知道邪惡方</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Assassin" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
 
       <ion-item>
-        <hr>
+        <!--<hr>-->
         <b><u>ROLES:</u></b>
         <br>
         <span *ngFor="let r of RolesName">

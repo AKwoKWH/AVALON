@@ -15,6 +15,7 @@ export class HomePage {
   roomdata = {
     Oberon:false,
     Percival: false,
+    Merlin: true,
     Mordred: false,
     Morgana: false,
     Assassin: false,
@@ -134,6 +135,8 @@ presentAlert(Infomation) {
 
 //GetRolesName====================================================
   GetRolesName(){
+    // this.roomdata.Merlin.checked
+    // console.log(this.roomdata.Merlin)
     this.GetRoles(this.roomdata.Number)
   }
 
