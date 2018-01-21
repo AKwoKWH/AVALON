@@ -1,0 +1,107 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>My Profile</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <button ion-button (click)="GetUserProfile()">Get Profile in Database</button>
+    
+    <div>
+    <br>Current User<br>
+    <ion-list class="nopadding">
+    <br>1
+    <br>{{currentUserInfo|json}}
+    <br>2
+    <br>{{(currentUserInfo)?.userName}}
+    <br>3
+    <br>{{(currentUserInfo)?.phonenumber}}
+
+
+    </ion-list>
+    </div>
+ 
+      <div>=================</div>
+    
+      <ion-item>
+        <span>Phone Number: {{(currentUserInfo)?.phonenumber}}</span>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Name</ion-label>
+        <ion-input type="text" [(ngModel)]="userInfoForm.userName" name="title"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Gender</ion-label>
+        <ion-select [(ngModel)]="userInfoForm.gender.Summary" multiple="false">
+          <ion-option selected>Male</ion-option>
+          <ion-option [selected]='("Male"=="Female")'>Female</ion-option>
+        </ion-select>
+      </ion-item> 
+
+      <ion-item>
+        <ion-label>Education</ion-label>
+        <ion-select [(ngModel)]="userInfoForm.education.Summary" multiple="true">
+          <ion-option [selected]=true>HKU</ion-option>
+          <ion-option [selected]='true'>CUHK</ion-option>
+          <ion-option [selected]='true'>HKUST</ion-option>
+          <ion-option [selected]='true'>HKIED</ion-option>
+          <ion-option [selected]='true'>Oversea</ion-option>
+          <ion-option [selected]='true'>Others</ion-option>
+        </ion-select>
+      </ion-item>      
+
+      <ion-item>
+        <ion-label>Education Level</ion-label>
+        <ion-select [(ngModel)]="userInfoForm.degree.Summary" multiple="false">
+          <ion-option selected>Bachelor</ion-option>
+          <ion-option>Master</ion-option>
+          <ion-option>Current Teacher</ion-option>
+        </ion-select>
+      </ion-item>    
+
+      <ion-item>
+        <ion-label>Expertise Areas</ion-label>
+        <ion-select [(ngModel)]="userInfoForm.expertArea.Summary" multiple="true">
+          <ion-option>Chinese</ion-option>
+          <ion-option>English</ion-option>
+          <ion-option>Mathematics</ion-option>
+          <ion-option>Physics</ion-option>
+          <ion-option>Chemistry</ion-option>
+          <ion-option>General Education</ion-option>
+          <ion-option>All Subjects</ion-option>          
+        </ion-select>
+      </ion-item>      
+
+      <ion-item>
+        <ion-label>Expertise level</ion-label>
+        <ion-select [(ngModel)]="userInfoForm.expertLevel.Summary" multiple="true">
+          <ion-option value='Primary'>Primary School</ion-option>
+          <ion-option value='SecondaryJunior'>Junior Secondary School</ion-option>
+          <ion-option value='SecondarySenior'>Senior Secondary School</ion-option>
+          <ion-option value='University'>University</ion-option>
+        </ion-select>
+      </ion-item>      
+
+      <ion-item>
+        <ion-label>Request Pay</ion-label>
+        <ion-input type="number" [(ngModel)]="userInfoForm.requestPay" name="requestPay" placeholder=""></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Description</ion-label>
+        <ion-textarea [(ngModel)]="userInfoForm.selfDescription" name="description" placeholder=""></ion-textarea>
+      </ion-item>
+
+
+
+    <button ion-button full  (click)="logForm()">Update</button>
+
+
+
+
+</ion-content>

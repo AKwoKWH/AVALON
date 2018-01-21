@@ -1,0 +1,135 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{RoomData.Name}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+<ion-list>
+  <span *ngIf="currentUser!=null" class="nopadding">
+    <ion-list class="nopadding">
+    <ion-item class="nopadding">
+      <ion-avatar item-start class="nopadding">
+        <img src={{currentUser.photoURL}}>
+      </ion-avatar>
+      <h1>{{currentUser.displayName}}</h1>
+    </ion-item>
+    </ion-list>
+
+    <ion-item class="nopadding">
+      <b><u>ROLES ({{TotalPlayer}}/{{RoomData.Number}}):</u></b>
+        <br>
+        <span *ngFor="let r of RoomData.RoleData">
+          <span *ngIf="r.side=='RED'"> 
+            <font color="red">{{r.role}};</font>
+          </span>
+        </span>
+        <br>
+        <span *ngFor="let r of RoomData.RoleData">
+          <span *ngIf="r.side=='BLUE'"> 
+            <font color="blue">{{r.role}};</font>
+          </span>
+        </span>
+    </ion-item>
+
+    <span *ngIf="PlayerStatus==null && TotalPlayer<RoomData.Number">
+    <button ion-button block icon-start color="danger" (click)="JoinGame()">
+      <ion-icon name="log-in"></ion-icon>
+       JOIN GAME
+    </button>
+    </span>
+
+    <span *ngIf="PlayerStatus=='JOIN'">
+    <button ion-button block icon-start color="secondary" (click)="ReadyGame()">
+      <ion-icon name="log-in"></ion-icon>
+       READY
+    </button>
+    </span>
+
+
+    <span *ngIf="PlayerStatus=='READY' && TotalPlayer<RoomData.Number">
+    <button ion-button block icon-start color="grey">
+      <ion-icon name="log-in"></ion-icon>
+       PENDIING OTHERS ......
+    </button>
+    </span>
+
+
+    <span *ngIf="PlayerStatus=='READY' && TotalPlayer==RoomData.Number">
+    <button ion-button block icon-start color="primary" (click)="ShowGame()">
+      <ion-icon name="log-in"></ion-icon>
+       SHOW ROLE
+    </button>
+    </span>
+
+
+
+
+  </span>
+
+  <span *ngIf="currentUser==null">
+    <ion-list text-center>      
+      <h1>PLEASE SIGN IN TO JOIN</h1>
+    </ion-list>
+  </span>
+</ion-list>
+  
+<!--<span class="nopadding" *ngFor="let player of RoomPlayer">-->
+  <ion-list class="nopadding" *ngFor="let player of RoomPlayer">
+    <ion-item class="nopadding">
+      <ion-thumbnail item-start>
+        <img src={{player.photoURL}}>
+      </ion-thumbnail>
+        {{player.displayName}} 
+
+        <span *ngIf="PlayerStatus!='SHOW'">
+          <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
+        </span>
+
+        <span *ngIf="PlayerStatus=='SHOW'">
+          <span *ngIf="MyRole.role=='Merlin'">
+            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          </span>
+          <span *ngIf="MyRole.role=='Percival'">
+            <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana') && (player.PlayerRole.role!=MyRole.role)">[Merlin/Morgana]</span>
+          </span>
+          <span *ngIf="MyRole.role=='Servant'">
+            <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+          </span>
+
+          <span *ngIf="RoomData.Assassin==false">
+          <span *ngIf="MyRole.role=='Mordred'">
+            <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          </span>
+          <span *ngIf="MyRole.side=='Minion'">
+            <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          </span>
+          <span *ngIf="MyRole.role=='Oberon'">
+            <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+          </span>
+          <span *ngIf="MyRole.role=='Morgana'">
+            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          </span>
+          </span>
+
+          <span *ngIf="MyRole.role=='Assassin'">
+            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          </span>
+
+          <span>
+            <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
+          </span>
+        </span>
+    </ion-item>
+  </ion-list>
+<!--</span>-->
+
+
+
+
+
+</ion-content>

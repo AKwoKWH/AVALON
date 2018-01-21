@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>CREATE ROOM</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+<ion-list>
+  <span *ngIf="currentUser!=null">
+      <ion-item>
+        <ion-label>ROOM NAME</ion-label>
+        <ion-input [(ngModel)]="roomdata.Name" type="Text"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>PLAYERS</ion-label>
+        <ion-select [(ngModel)]="roomdata.Number" multiple="false" (ionChange)="GetRolesName()">
+          <ion-option>5</ion-option>
+          <ion-option>6</ion-option>
+          <ion-option>7</ion-option>
+          <ion-option>8</ion-option>
+          <ion-option>9</ion-option>
+          <ion-option>10</ion-option>
+        </ion-select>
+      </ion-item> 
+
+      <ion-item>
+        <ion-label>奧伯倫(對邪惡方互不了解)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Oberon" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>刺客(刺客模式：只有刺客知道邪惡方)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Assassin" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>派西維爾(知道誰是梅林)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Percival" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>莫德雷德(梅林不知道他)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Mordred" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>莫甘娜(以梅林的形象出現)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Morgana" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+
+      <ion-item>
+        <hr>
+        <b><u>ROLES:</u></b>
+        <br>
+        <span *ngFor="let r of RolesName">
+          <span *ngIf="r.side=='RED'"> 
+            <font color="red">{{r.role}};</font>
+          </span>
+        </span>
+        <br>
+        <span *ngFor="let r of RolesName">
+          <span *ngIf="r.side=='BLUE'"> 
+            <font color="blue">{{r.role}};</font>
+          </span>
+        </span>
+
+      </ion-item>
+
+    <button ion-button block icon-start color="secondary" (click)="CreateRoom()">
+      <ion-icon name="add-circle"></ion-icon>
+       CREATE GAME
+    </button>
+
+
+  </span>
+
+  <span *ngIf="currentUser==null">
+    <ion-list text-center>      
+      <h1>PLEASE SIGN IN TO CREATE</h1>
+    </ion-list>
+  </span>
+</ion-list>
+  
+
+
+
+
+
+
+</ion-content>

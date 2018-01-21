@@ -1,0 +1,79 @@
+<ion-menu [content]="content">
+  <ion-header>
+    <!--<ion-toolbar>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>-->
+  </ion-header>
+
+  <ion-content>
+
+    <span *ngIf="currentUser==null">
+      <ion-list text-center>
+        <br>
+        <img src='assets/imgs/profile.png' class="custom-avatar" >
+        <h2>PLEASE SIGN IN</h2>
+        <hr>
+      </ion-list>
+      <button ion-button block icon-start color="blue" (click)="SigninWithFacebook()">
+        <ion-icon name="logo-facebook"></ion-icon>
+         Facebook Sign In
+      </button>
+      <button ion-button block icon-start color="danger" (click)="SigninWithGoogle()">
+        <ion-icon name="logo-google"></ion-icon>
+         Google Sign In
+      </button>
+        <!--<hr>-->
+    </span>
+
+
+
+
+    <span *ngIf="currentUser!=null">
+      <!--<ion-list text-center>
+        <br>
+        <img src={{currentUser.photoURL}} class="custom-avatar"/>
+        <h2>{{currentUser.displayName}}</h2>
+        <hr>
+      </ion-list>-->
+
+      <br>
+      <label class="item fileContainer">
+        <div class="circular--portrait">
+          <img src={{currentUser.photoURL}}  *ngIf="currentUser.photoURLCustom64==null">
+          <img src={{currentUser.photoURLCustom64}} *ngIf="currentUser.photoURLCustom64!=null">
+          <input type="file" name="file" accept="image/*;capture=camera" ngModel (change)="ProfilePic($event)">
+        </div>
+        <h2 text-center>{{currentUser.displayName}}</h2>
+      </label>
+
+      <button ion-button block icon-start color="danger" (click)="Signout()">
+        <ion-icon name="log-out"></ion-icon>
+         SIGN OUT
+      </button>
+      <hr>
+
+      <!--<ion-list>      
+      <button menuClose ion-item (click)="openCreateRoomPage()">
+        DEFAULT ROOM
+      </button>
+      </ion-list>-->
+
+      <ion-list>      
+      <button menuClose ion-button full outline (click)="openRoomPage()">
+        DEFAULT ROOM
+      </button>
+      </ion-list>
+
+      <ion-list text-center>      
+      <button ion-button round outline menuClose color="secondary" (click)="openCreateRoomPage()">
+        + Create Room
+      </button>
+      </ion-list>
+    </span>
+
+  </ion-content>
+
+</ion-menu>
+
+<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>

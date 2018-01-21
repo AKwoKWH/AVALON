@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+    <ion-title>Login</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  
+  <span *ngIf="currentUser==null">
+    <button ion-button block icon-start color="blue" (click)="SigninWithFacebook()">
+      <ion-icon name="logo-facebook"></ion-icon>
+       Facebook Sign In
+    </button>
+    <button ion-button block icon-start color="danger" (click)="SigninWithGoogle()">
+      <ion-icon name="logo-google"></ion-icon>
+       Google Sign In
+    </button>
+    <!--<ion-label stacked>Phone Number</ion-label>
+    <ion-input type="tel" [(ngModel)]="phoneNumber"></ion-input>
+    <button ion-button block color="secondary" (click)="SigninWithMoblie(phoneNumber)">
+      Sign In with your Phone Number
+    </button>-->
+  </span>
+
+  <div id="recaptcha-container"></div>
+
+  <span *ngIf="currentUser!=null">
+    <ion-list>
+    <h1>SIGNED IN</h1>
+
+    <ion-item class="nopadding">
+      <ion-avatar item-start>
+        <img src={{currentUser.photoURL}}>
+      </ion-avatar>
+      <h1>{{currentUser.displayName}}</h1>
+    </ion-item>
+    </ion-list>
+
+    <button ion-button block icon-start color="danger" (click)="Signout()">
+      <ion-icon name="log-out"></ion-icon>
+       SIGN OUT
+    </button>
+  </span>
+
+
+
+</ion-content>
