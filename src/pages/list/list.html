@@ -101,7 +101,7 @@
             <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
           </span>
 
-          <span *ngIf="RoomData.Assassin==false">
+        <span *ngIf="RoomData.Assassin==false">
           <span *ngIf="MyRole.role=='Mordred'">
             <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
           </span>
@@ -114,12 +114,12 @@
           <span *ngIf="MyRole.role=='Morgana'">
             <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
           </span>
-          </span>
-          <hr>
+        </span>
+          
           <span *ngIf="MyRole.role=='Assassin'">
             <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
           </span>
-          <hr>
+          
           <span>
             <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
           </span>

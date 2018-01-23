@@ -10,7 +10,7 @@
     <span *ngIf="currentUser==null">
       <ion-list text-center>
         <br>
-        <img src='assets/imgs/profile.png' class="custom-avatar" >
+        <img src='assets/imgs/profile.png' class="custom-avatar" (tap)="HiddenMenu()">
         <h2>PLEASE SIGN IN</h2>
         <hr>
       </ion-list>
@@ -21,6 +21,11 @@
       <button ion-button block icon-start color="danger" (click)="SigninWithGoogle()">
         <ion-icon name="logo-google"></ion-icon>
          Google Sign In
+      </button>
+
+      <button ion-button block icon-start color="dark" (click)="SigninWithGithub()" *ngIf=Gituser>
+        <ion-icon name="logo-github"></ion-icon>
+         Github Sign In
       </button>
         <!--<hr>-->
     </span>
@@ -59,19 +64,19 @@
       </ion-list>-->
 
       <ion-list>      
-      <button menuClose ion-button full outline (click)="openRoomPage()">
+      <button menuClose detail-push ion-button full outline (click)="openRoomPage()">
         DEFAULT ROOM
       </button>
       </ion-list>
 
       <ion-list>      
-      <button ion-button full outline>
+      <button ion-button detail-push full outline>
         ROOM 1
       </button>
       </ion-list>
 
       <ion-list>      
-      <button ion-button full outline>
+      <button ion-button detail-push full outline>
         ROOM 2
       </button>
       </ion-list>

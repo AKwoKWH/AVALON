@@ -26,6 +26,9 @@ export class MyApp {
     displayName: 'LOADING....',
     photoURLCustom64: null
   };
+  Gituser = false
+  counter = 0
+
 
   constructor(
     public platform: Platform, 
@@ -59,6 +62,15 @@ export class MyApp {
       this.splashScreen.hide();
     });
   } 
+
+  HiddenMenu(){
+    this.counter = this.counter +1
+    // console.log(this.counter)
+    if (this.counter>10){
+      this.Gituser = true
+      console.log(this.Gituser)
+    }
+  }
 
 
   openCreateRoomPage() {
@@ -107,6 +119,20 @@ export class MyApp {
     });
   }
 //============================================================
+
+//GITHUB SIGNIN===============================================
+  SigninWithGithub(){
+    console.log('function FirebaseSignInWithGithub Called');
+    var provider = new firebase.auth.GithubAuthProvider();
+    this.afAuth.auth.signInWithRedirect(provider);
+    firebase.auth().getRedirectResult().then(function(authData) {
+	    console.log(authData);
+    }).catch(function(error) {
+	    console.log(error);
+    });
+  }
+//============================================================
+
 
 //CREATECURRENTUSER===================================================
   CreateUserProfile(){  
