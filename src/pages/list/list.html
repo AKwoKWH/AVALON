@@ -85,39 +85,39 @@
         <img src={{player.photoURL}}>
       </ion-thumbnail>
         {{player.displayName}} 
-
+        
         <span *ngIf="PlayerStatus!='SHOW'">
           <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
         </span>
 
         <span *ngIf="PlayerStatus=='SHOW'">
           <span *ngIf="MyRole.role=='Merlin'">
-            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">[RED]</span>
           </span>
           <span *ngIf="MyRole.role=='Percival'">
-            <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana') && (player.PlayerRole.role!=MyRole.role)">[Merlin/Morgana]</span>
+            <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana')">[Merlin/Morgana]</span>
           </span>
           <span *ngIf="MyRole.role=='Servant'">
             <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
           </span>
 
-        <span *ngIf="RoomData.Assassin==false">
-          <span *ngIf="MyRole.role=='Mordred'">
-            <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+          <span *ngIf="RoomData.Assassin==false">
+            <span *ngIf="MyRole.role=='Mordred'">
+              <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+            </span>
+            <span *ngIf="MyRole.role=='Minion'">
+              <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+            </span>
+            <span *ngIf="MyRole.role=='Oberon'">
+              <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+            </span>
+            <span *ngIf="MyRole.role=='Morgana'">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
+            </span>
           </span>
-          <span *ngIf="MyRole.side=='Minion'">
-            <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
-          </span>
-          <span *ngIf="MyRole.role=='Oberon'">
-            <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
-          </span>
-          <span *ngIf="MyRole.role=='Morgana'">
-            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
-          </span>
-        </span>
           
           <span *ngIf="MyRole.role=='Assassin'">
-            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!=MyRole.role)">[RED]</span>
+            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
           </span>
           
           <span>
