@@ -12,7 +12,7 @@ import { SubscriptionPage } from '../pages/subscription/subscription';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
-// import * as admin from "firebase-admin";
+import * as admin from "firebase-admin";
 
 
 @Component({
@@ -66,7 +66,8 @@ export class MyApp {
       if (!user) {
         this.currentUser = null
       }else {
-        this.CreateUserProfile()  
+        this.CreateUserProfile()
+        this.currentUser = null
         this.currentUser = user
         this.afDB.collection("users").doc(user.uid).valueChanges().subscribe(result => {
           this.currentUser = result
@@ -123,7 +124,6 @@ export class MyApp {
     
     if (this.counter>10){
       this.Gituser = true
-      this.FCMGetToken()
       // console.log(this.Gituser)
     }
   }
@@ -138,8 +138,7 @@ export class MyApp {
       };
 
     // const admin = require('firebase-admin');
-
-    // admin.sendToDevice(userFcmToken, payload)
+    admin.sendToDevice(userFcmToken, payload)
 
   }
 

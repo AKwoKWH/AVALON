@@ -4,6 +4,8 @@ import { NavController, NavParams, AlertController } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
+import * as admin from "firebase-admin";
+
 
 @Component({
   selector: 'page-home',
@@ -209,6 +211,68 @@ presentAlert(Infomation) {
     return arr
   }
 //===============================================================
+
+
+//FCM====================================================================
+
+  FCMTokenRefresh(){
+    firebase.messaging().onTokenRefresh(function() {
+      firebase.messaging().getToken()
+      .then(function(refreshedToken) {
+        console.log('Token refreshed.');
+      })
+      .catch(function(err) {
+        console.log('Unable to retrieve refreshed token ', err);
+      });
+    });
+  }
+
+  FCMGetToken(){
+    firebase.messaging().getToken()
+      .then(function(currentToken) {
+        if (currentToken) {
+            console.log(currentToken);
+            this.SENDFCM(currentToken)
+          } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            //Request Permission
+            firebase.messaging().requestPermission().then(function() {
+              console.log('Notification permission granted.');
+              //Re-get Token
+              firebase.messaging().getToken().then(function(currentToken) {
+                if (currentToken) {
+                  console.log(currentToken);
+                  this.SENDFCM(currentToken)
+                }
+              }) 
+            }).catch(function(err) {
+              console.log('Unable to get permission to notify.', err);
+            });
+          }
+      })
+    .catch(function(err) {
+      console.log('An error occurred while retrieving token. ', err);
+    });
+  }
+
+  SENDFCM(userFcmToken){
+      const payload = {
+        notification: {
+          title: "Game Start",
+          body: "Game Start - Lets Go",
+          icon: "https://placeimg.com/250/250/people"
+        }
+      };
+
+    // const admin = require('firebase-admin');
+    // admin.sendToDevice(userFcmToken, payload)
+
+  }
+
+//=====================================================================
+
+
 
 // //CREATECURRENTUSER===================================================
 //   JoinGame(){  

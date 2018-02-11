@@ -14,7 +14,7 @@
     <ion-list class="nopadding">
     <ion-item class="nopadding">
       <ion-avatar item-start class="nopadding">
-        <img src={{currentUser.photoURL}}>
+        <img src={{currentUser.photoURL}} (click)="FCMGetToken()">
       </ion-avatar>
       <h1>{{currentUser.displayName}}</h1>
     </ion-item>

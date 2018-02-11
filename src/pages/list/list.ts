@@ -6,6 +6,10 @@ import { AngularFirestoreDocument } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Observable } from 'rxjs/Observable';
+import * as admin from "firebase-admin";
+import firebase from 'firebase';
+import request from 'request'
+// import { Http } from '@angular/http';
 
 // export interface Item {}
 
@@ -29,7 +33,8 @@ export class ListPage {
     public navCtrl: NavController, 
     public navParams: NavParams,
     public afAuth: AngularFireAuth,
-    public afDB: AngularFirestore
+    public afDB: AngularFirestore,
+    // public http: Http
   ) {
       afAuth.authState.subscribe(user => {
         if (!user) {this.currentUser = null}
@@ -50,7 +55,14 @@ export class ListPage {
       this.checkStatus()
       this.AssignRole()
       // this.Trigger()
+
+      // firebase.messaging().onMessage(payload => {
+      //   console.log("Message received. ", payload);
+      //   // return self.registration.showNotification(notificationTitle,notificationOptions);
+      // });
     }
+
+
 
 
   GetRoomData(){
@@ -72,7 +84,11 @@ export class ListPage {
       }
       console.log('TOTAL: ',count)      
       this.TotalPlayer = count
-      this.RoomPlayer = result      
+      this.RoomPlayer = result 
+      if (count == this.RoomData.Number){ 
+        console.log("START")
+        this.FCMGetToken()
+      }   
     })
 
   }
@@ -114,6 +130,107 @@ export class ListPage {
   })
   }
 //===============================================================
+
+
+
+//FCM====================================================================
+
+  FCMTokenRefresh(){
+    firebase.messaging().onTokenRefresh(function() {
+      firebase.messaging().getToken()
+      .then(function(refreshedToken) {
+        console.log('Token refreshed.');
+      })
+      .catch(function(err) {
+        console.log('Unable to retrieve refreshed token ', err);
+      });
+    });
+  }
+
+  FCMGetToken(){
+    firebase.messaging().getToken()
+      .then(currentToken => {
+        if (currentToken) {
+            console.log(currentToken);
+            this.SENDFCM(currentToken)
+            // this.scope.testing()
+          } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            //Request Permission
+            firebase.messaging().requestPermission().then(function() {
+              console.log('Notification permission granted.');
+              //Re-get Token
+              firebase.messaging().getToken().then(function(currentToken) {
+                if (currentToken) {
+                  console.log(currentToken);
+                  this.SENDFCM(currentToken)
+                }
+              }) 
+            }).catch(function(err) {
+              console.log('Unable to get permission to notify.', err);
+            });
+          }
+      })
+    .catch(function(err) {
+      console.log('An error occurred while retrieving token. ', err);
+    });
+  }
+
+  SENDFCMAPP(userFcmToken){
+    console.log("SENDFCM - GameStart")
+      const payload = {
+        notification: {
+          title: "Game Start",
+          body: "Game Start - Lets Go",
+          icon: "https://placeimg.com/250/250/people"
+        }
+      };
+
+    // return this.http.post('https://vision.googleapis.com/v1/images:annotate?key=' + FirebaseEnvironment.firebaseConfig.googleCloudAPIKey, body);
+  }
+
+
+  SENDFCM(deviceId){
+
+      // firebase.messaging().onMessage(payload => {
+      //   console.log("Message received. ", payload);
+      // // return self.registration.showNotification(notificationTitle,notificationOptions);
+      // });
+
+      request({
+        url: 'https://fcm.googleapis.com/fcm/send',
+        method: 'POST',
+        headers: {
+          'Content-Type' :' application/json',
+          'Authorization': 'key=AAAAUfsD2mI:APA91bHe3pi2DgzRccx7kqpmAf8_8e59VxCSeZeUA_PyBakewcalPpMd0Gkzs7akpgClZm6qsOx0oKgHcOxDiQlAWMzCwwUUg1eiygCkz_mRxPfwsFM5ewD9SJTbFxDUlywwvZdYyv6C'
+        },
+        body: JSON.stringify(
+          { "data": {
+            "message": "Game Start - Lets Go"
+          },
+            "to" : deviceId
+            // "to" : 'c_XZFxDio1U:APA91bEOXReotDyrfTImskiAA19-I_12rD8XSC6_o1gwXpQLNtn6TtZwhffsfrwPu4Kc7RZlBYXFFyjTymNpkx3BhQnk1J32fSm0NNllBTr2chfX8FlKQwrnftlJDMCEfYQQGJzc6lYs'
+          }
+        )
+      }, function(error, response, body) {
+        if (error) { 
+          console.error(error, response, body); 
+        }
+        else if (response.statusCode >= 400) { 
+          console.error('HTTP Error: '+response.statusCode+' - '+response.statusMessage+'\n'+body); 
+        }
+        else {
+          console.log('Done!')
+          console.error('Response: '+response.statusCode+' - '+response.statusMessage+'\n'+body); 
+        }
+      });
+
+  }
+
+  
+//=====================================================================
+
 
 //JOINGAME=======================================================
   JoinGame(){  

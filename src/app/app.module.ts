@@ -24,7 +24,7 @@ const firebaseConfig = {
     databaseURL: "https://avalon-991ac.firebaseio.com",
     projectId: "avalon-991ac",
     storageBucket: "avalon-991ac.appspot.com",
-    messagingSenderId: "439691655002"
+    messagingSenderId: "352103684706"
 }
 
 @NgModule({
