@@ -12,6 +12,7 @@ import { SubscriptionPage } from '../pages/subscription/subscription';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
+// import * as admin from "firebase-admin";
 
 
 @Component({
@@ -30,6 +31,7 @@ export class MyApp {
   counter = 0
 
 
+
   constructor(
     public platform: Platform, 
     public statusBar: StatusBar, 
@@ -39,6 +41,27 @@ export class MyApp {
   ) {
 
     this.initializeApp();
+
+
+    // if ('serviceWorker' in navigator) {
+    //   navigator.serviceWorker.register('sw.js').then(function(registration) {
+    //     console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    //     firebase.messaging().useServiceWorker(registration)
+    //   });
+ 
+      firebase.messaging().requestPermission()
+      .then(function() {
+        console.log('Notification permission granted.');
+        // this.FCMGetToken()
+      })
+      .catch(function(err) {
+        console.log('Unable to get permission to notify.', err);
+      });
+    
+    // }
+
+      // this.FCMGetToken()
+
     afAuth.authState.subscribe(user => {
       if (!user) {
         this.currentUser = null
@@ -55,7 +78,38 @@ export class MyApp {
     // this.CreateRoomPage = {title: 'Create Room', component: HomePage };
 
   }
- 
+
+
+  FCMTokenRefresh(){
+    firebase.messaging().onTokenRefresh(function() {
+      firebase.messaging().getToken()
+      .then(function(refreshedToken) {
+        console.log('Token refreshed.');
+      })
+      .catch(function(err) {
+        console.log('Unable to retrieve refreshed token ', err);
+      });
+    });
+  }
+
+  FCMGetToken(){
+    firebase.messaging().getToken()
+      .then(function(currentToken) {
+        if (currentToken) {
+            console.log(currentToken);
+            this.SENDFCM(currentToken)
+          } else {
+            // Show permission request.
+            console.log('No Instance ID token available. Request permission to generate one.');
+            // Show permission UI.
+          }
+      })
+    .catch(function(err) {
+      console.log('An error occurred while retrieving token. ', err);
+    });
+  }
+
+
   initializeApp() {
     this.platform.ready().then(() => {
       this.statusBar.styleDefault();
@@ -66,12 +120,28 @@ export class MyApp {
   HiddenMenu(){
     this.counter = this.counter +1
     // console.log(this.counter)
+    
     if (this.counter>10){
       this.Gituser = true
-      console.log(this.Gituser)
+      this.FCMGetToken()
+      // console.log(this.Gituser)
     }
   }
 
+  SENDFCM(userFcmToken){
+      const payload = {
+        notification: {
+          title: message.title,
+          body: message.body,
+          icon: "https://placeimg.com/250/250/people"
+        }
+      };
+
+    // const admin = require('firebase-admin');
+
+    // admin.sendToDevice(userFcmToken, payload)
+
+  }
 
   openCreateRoomPage() {
     this.nav.setRoot(HomePage);
