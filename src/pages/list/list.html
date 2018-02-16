@@ -14,7 +14,7 @@
     <ion-list class="nopadding">
     <ion-item class="nopadding">
       <ion-avatar item-start class="nopadding">
-        <img src={{currentUser.photoURL}} (click)="FCMGetToken()">
+        <img src={{currentUser.photoURL}} (click)='AdminMode()'>
       </ion-avatar>
       <h1>{{currentUser.displayName}}</h1>
     </ion-item>
@@ -80,51 +80,58 @@
   
 <!--<span class="nopadding" *ngFor="let player of RoomPlayer">-->
   <ion-list class="nopadding" *ngFor="let player of RoomPlayer">
-    <ion-item class="nopadding">
-      <ion-thumbnail item-start>
-        <img src={{player.photoURL}}>
-      </ion-thumbnail>
-        {{player.displayName}} 
-        
-        <span *ngIf="PlayerStatus!='SHOW'">
-          <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
-        </span>
 
-        <span *ngIf="PlayerStatus=='SHOW'">
-          <span *ngIf="MyRole.role=='Merlin'">
-            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">[RED]</span>
-          </span>
-          <span *ngIf="MyRole.role=='Percival'">
-            <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana')">[Merlin/Morgana]</span>
-          </span>
-          <span *ngIf="MyRole.role=='Servant'">
-            <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+    <ion-item-sliding>
+      <ion-item class="nopadding">
+        <ion-thumbnail item-start>
+          <img src={{player.photoURL}}>
+        </ion-thumbnail>
+          {{player.displayName}} 
+          
+          <span *ngIf="PlayerStatus!='SHOW'">
+            <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
           </span>
 
-          <span *ngIf="RoomData.Assassin==false">
-            <span *ngIf="MyRole.role=='Mordred'">
-              <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+          <span *ngIf="PlayerStatus=='SHOW'">
+            <span *ngIf="MyRole.role=='Merlin'">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">[RED]</span>
             </span>
-            <span *ngIf="MyRole.role=='Minion'">
-              <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+            <span *ngIf="MyRole.role=='Percival'">
+              <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana')">[Merlin/Morgana]</span>
             </span>
-            <span *ngIf="MyRole.role=='Oberon'">
+            <span *ngIf="MyRole.role=='Servant'">
               <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
             </span>
-            <span *ngIf="MyRole.role=='Morgana'">
+
+            <span *ngIf="RoomData.Assassin==false">
+              <span *ngIf="MyRole.role=='Mordred'">
+                <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+              </span>
+              <span *ngIf="MyRole.role=='Minion'">
+                <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
+              </span>
+              <span *ngIf="MyRole.role=='Oberon'">
+                <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+              </span>
+              <span *ngIf="MyRole.role=='Morgana'">
+                <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
+              </span>
+            </span>
+            
+            <span *ngIf="MyRole.role=='Assassin'">
               <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
             </span>
+            
+            <span>
+              <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
+            </span>
           </span>
-          
-          <span *ngIf="MyRole.role=='Assassin'">
-            <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
-          </span>
-          
-          <span>
-            <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
-          </span>
-        </span>
-    </ion-item>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="secondary" (click)="pokeUser(player)">POKE</button>
+        <button ion-button color="danger" (click)="kickUser(player)" *ngIf="adminUser==true" >KICK</button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 <!--</span>-->
 

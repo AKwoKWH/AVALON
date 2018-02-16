@@ -36,17 +36,17 @@ importScripts('https://www.gstatic.com/firebasejs/4.1.1/firebase.js');
 
 
 var config = {
-    apiKey: "AIzaSyAKC1QBxrKsYVoROebkrDfh17XnAe_F-Js",
-    authDomain: "avalon-991ac.firebaseapp.com",
-    databaseURL: "https://avalon-991ac.firebaseio.com",
-    projectId: "avalon-991ac",
-    storageBucket: "avalon-991ac.appspot.com",
-    messagingSenderId: "439691655002"
+    apiKey: "AIzaSyDhPrYaymeIAeCCZEdwR3Zs5YYsjyTo_YA",
+    authDomain: "avalon-905dd.firebaseapp.com",
+    databaseURL: "https://avalon-905dd.firebaseio.com",
+    projectId: "avalon-905dd",
+    storageBucket: "avalon-905dd.appspot.com",
+    messagingSenderId: "352103684706"
 };
 firebase.initializeApp(config);
 const messaging = firebase.messaging();
 
-messaging.setBackgroundMessageHandler(function(payload) {
+messaging.setBackgroundMessageHandler(payload => {
     console.log('[firebase-messaging-sw.js] Received background message ', payload);
     // Customize notification here
     const notificationTitle = 'Background Message Title';
@@ -55,6 +55,5 @@ messaging.setBackgroundMessageHandler(function(payload) {
         icon: '/firebase-logo.png'
     };
 
-return self.registration.showNotification(notificationTitle,
-    notificationOptions);
+    return self.registration.showNotification(notificationTitle,notificationOptions);
 });

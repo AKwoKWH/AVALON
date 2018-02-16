@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
+import { take } from 'rxjs/operators';
 import { AngularFirestoreDocument } from 'angularfire2/firestore';
 // import { AngularFirestoreCollection } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -27,6 +27,9 @@ export class ListPage {
   RoomPlayer;
   MyRole;
   TotalPlayer;
+  admincounter = 0;
+  lastPlayer = false
+  adminUser = false
   
 
   constructor(
@@ -49,17 +52,14 @@ export class ListPage {
             }
           })
         }
-        console.log(this.currentUser)
+        // console.log(this.currentUser)
       })
       this.GetRoomData()
       this.checkStatus()
       this.AssignRole()
+      //this.setdata()
       // this.Trigger()
 
-      // firebase.messaging().onMessage(payload => {
-      //   console.log("Message received. ", payload);
-      //   // return self.registration.showNotification(notificationTitle,notificationOptions);
-      // });
     }
 
 
@@ -74,23 +74,36 @@ export class ListPage {
 
     this.afDB.collection("games").doc('DEFAULT ROOM').collection('PLAYERS').valueChanges().subscribe(result => {
       // console.log(result)
-      var count = 0 
-      for (var key in result) {
-        console.log(result[key])
-        if (result[key].status == "READY" || result[key].status == "SHOW"){
-        console.log(result[key].PlayerRole)
-        count = count + 1
+      this.afAuth.authState.subscribe(user => {
+      
+        var count = 0 
+        for (var key in result) {
+          console.log(result[key])
+          if (result[key].status == "READY" || result[key].status == "SHOW"){
+            count = count + 1
+          }
+          if (result[key].userID == user.uid){
+            var mystatus = result[key].status
+          }
         }
-      }
-      console.log('TOTAL: ',count)      
-      this.TotalPlayer = count
-      this.RoomPlayer = result 
-      if (count == this.RoomData.Number){ 
-        console.log("START")
-        this.FCMGetToken()
-      }   
-    })
+        console.log('TOTAL: ',count)
+        this.TotalPlayer = count
+        this.RoomPlayer = result 
 
+        if (count == this.RoomData.Number - 1 && mystatus == 'JOIN'){ 
+          console.log("I AM THE LAST ONE")
+          this.lastPlayer = true
+          // this.FCMGetToken('I AM THE LAST ONE')
+        }
+
+        // if (count == this.RoomData.Number){ 
+        //   console.log("START")
+        //   this.FCMGetToken('Game Start')
+        // } else {
+        //   // this.FCMGetToken(count + ' Player Joined')      
+        // }   
+      })
+    })
   }
 
 
@@ -104,55 +117,39 @@ export class ListPage {
 
 //CHECKSTATUS====================================================
   checkStatus(){
-  this.afAuth.authState.subscribe(user => {
-    this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
-        if (playerInfo==null){
-          console.log('profile not in room');
-        }
-        else {
-          this.PlayerStatus = playerInfo.status
-          this.MyRole = playerInfo.PlayerRole
-          console.log('profile in room', playerInfo.status)
-        }
+    this.afAuth.authState.subscribe(user => {
+      this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
+          if (playerInfo==null || !playerInfo){
+            this.PlayerStatus = null;
+            console.log('profile not in room', this.PlayerStatus)
+          }
+          else {
+            this.PlayerStatus = playerInfo.status
+            this.MyRole = playerInfo.PlayerRole
+            console.log('profile in room', playerInfo.status)
+          }
+      })
     })
-
-    // this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').valueChanges().subscribe(playerInfo => {
-
-    //   var count = 0 
-    //   for (var key in playerInfo) {
-    //     count = count + 1
-    //     // console.log('temp: ',count)
-    //   }
-    //     console.log('TOTAL: ',count)      
-    //     this.TotalPlayer = count
-    // })
-
-  })
   }
 //===============================================================
 
-
+NotificationTesting() {
+  if ("Notification" in window) {
+    var permission = Notification.permission;
+    console.log(permission)
+    var notificationtest = new Notification("Hello, world!");
+  }
+}
 
 //FCM====================================================================
 
-  FCMTokenRefresh(){
-    firebase.messaging().onTokenRefresh(function() {
-      firebase.messaging().getToken()
-      .then(function(refreshedToken) {
-        console.log('Token refreshed.');
-      })
-      .catch(function(err) {
-        console.log('Unable to retrieve refreshed token ', err);
-      });
-    });
-  }
 
-  FCMGetToken(){
+  SendSelfFCM(msg){
     firebase.messaging().getToken()
       .then(currentToken => {
         if (currentToken) {
             console.log(currentToken);
-            this.SENDFCM(currentToken)
+            this.SENDFCM(currentToken,msg)
             // this.scope.testing()
           } else {
             // Show permission request.
@@ -177,26 +174,7 @@ export class ListPage {
     });
   }
 
-  SENDFCMAPP(userFcmToken){
-    console.log("SENDFCM - GameStart")
-      const payload = {
-        notification: {
-          title: "Game Start",
-          body: "Game Start - Lets Go",
-          icon: "https://placeimg.com/250/250/people"
-        }
-      };
-
-    // return this.http.post('https://vision.googleapis.com/v1/images:annotate?key=' + FirebaseEnvironment.firebaseConfig.googleCloudAPIKey, body);
-  }
-
-
-  SENDFCM(deviceId){
-
-      // firebase.messaging().onMessage(payload => {
-      //   console.log("Message received. ", payload);
-      // // return self.registration.showNotification(notificationTitle,notificationOptions);
-      // });
+  SENDFCM(deviceId, msg){
 
       request({
         url: 'https://fcm.googleapis.com/fcm/send',
@@ -207,10 +185,9 @@ export class ListPage {
         },
         body: JSON.stringify(
           { "data": {
-            "message": "Game Start - Lets Go"
+            "message": msg
           },
             "to" : deviceId
-            // "to" : 'c_XZFxDio1U:APA91bEOXReotDyrfTImskiAA19-I_12rD8XSC6_o1gwXpQLNtn6TtZwhffsfrwPu4Kc7RZlBYXFFyjTymNpkx3BhQnk1J32fSm0NNllBTr2chfX8FlKQwrnftlJDMCEfYQQGJzc6lYs'
           }
         )
       }, function(error, response, body) {
@@ -231,6 +208,22 @@ export class ListPage {
   
 //=====================================================================
 
+
+
+//SEND EVERYONE==================================================
+
+  gameStartFCM(){
+    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {
+        for (var key in player) {
+          this.afDB.collection("users").doc(player[key].userID).valueChanges().pipe(take(1)).subscribe(result => {      
+            console.log('Send ' + result.displayName + ', Token: ' + result.token)
+            this.SENDFCM(result.token,"Game is now START!!!!")
+          })
+        } 
+      })
+  }
+
+//===============================================================
 
 //JOINGAME=======================================================
   JoinGame(){  
@@ -259,6 +252,60 @@ export class ListPage {
 //===============================================================
 
 
+//SETDATA============================================================
+
+  setdata(){
+    this.afDB.collection('roles').doc('10').set({Evil: 4, Servant: 6}).catch(err => console.log(err));
+    this.afDB.collection('roles').doc('9').set({Evil: 3, Servant: 6});
+    this.afDB.collection('roles').doc('8').set({Evil: 3, Servant: 5});
+    this.afDB.collection('roles').doc('7').set({Evil: 3, Servant: 4});
+    this.afDB.collection('roles').doc('6').set({Evil: 2, Servant: 4});
+    this.afDB.collection('roles').doc('5').set({Evil: 2, Servant: 3});
+
+
+  }
+    
+
+//===================================================================
+
+
+//ADMIN MODE======================================================
+
+  AdminMode(){
+    this.admincounter = this.admincounter +1
+    if (this.admincounter>10){
+      this.adminUser = true
+    }
+  }
+
+//================================================================
+
+
+//poke===========================================================
+  pokeUser(player){
+    console.log(player)
+
+    this.afDB.collection("users", ref => {
+      return ref.where('userID', '==', player.userID)
+    }).valueChanges().pipe(take(1)).subscribe(result => {
+      console.log(result[0].token)
+      // this.SENDFCM(result[0].token,'Hello ' + player.displayName)
+      this.SENDFCM(result[0].token,'SOMEONE POKE YOU!!!!')
+    })
+
+  }
+//================================================================
+
+//KICK===========================================================
+  kickUser(player){
+    console.log(player)
+    this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.userID).delete();
+  }
+//================================================================
+
+
+
+
 //READYGAME=======================================================
   ReadyGame(){
     // this.afAuth.authState.subscribe(user => {
@@ -272,6 +319,10 @@ export class ListPage {
       //   } 
       // })
     // })
+      if (this.lastPlayer == true) {
+        console.log('SEND ALL A START GAME MSG')
+        this.gameStartFCM()
+      }
   }
 //===============================================================
 

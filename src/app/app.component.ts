@@ -13,6 +13,8 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
 import * as admin from "firebase-admin";
+import request from 'request'
+import { LocalNotifications } from '@ionic-native/local-notifications';
 
 
 @Component({
@@ -44,23 +46,51 @@ export class MyApp {
 
 
     // if ('serviceWorker' in navigator) {
-    //   navigator.serviceWorker.register('sw.js').then(function(registration) {
-    //     console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    //     firebase.messaging().useServiceWorker(registration)
-    //   });
- 
-      firebase.messaging().requestPermission()
-      .then(function() {
-        console.log('Notification permission granted.');
-        // this.FCMGetToken()
+      navigator.serviceWorker.register('firebase-messaging-sw.js').then(registration =>  {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        firebase.messaging().useServiceWorker(registration)
       })
-      .catch(function(err) {
-        console.log('Unable to get permission to notify.', err);
-      });
-    
-    // }
+    // };
 
-      // this.FCMGetToken()
+
+      firebase.messaging().onMessage(payload=> {
+        console.log("Message received. app - notification: ", Notification.permission, payload);
+          const notificationTitle = 'AVALON';
+          const notificationOptions = {
+              body: payload.data.message,
+              icon: '/firebase-logo.png'
+          };
+
+          // Let's check if the browser supports notifications
+          if (!("Notification" in window)) {
+            alert("This browser does not support system notifications");
+          }
+
+          // Let's check whether notification permissions have already been granted
+          else if (Notification.permission == "granted") {
+            // If it's okay let's create a notification
+            console.log('perm ok  ')
+            var notification = new Notification(payload.data.message);
+          }
+
+          // Otherwise, we need to ask the user for permission
+          else if (Notification.permission == 'denied') {
+            Notification.requestPermission(function (permission) {
+              // If the user accepts, let's create a notification
+              console.log("DENIEDED")
+              if (permission == "granted") {
+                var notification = new Notification(payload.data.message);
+              }
+            });
+          }
+
+
+      
+        // console.log(notificationTitle,notificationOptions)
+        // var notification = new Notification(notificationTitle,notificationOptions);
+
+      });
+  
 
     afAuth.authState.subscribe(user => {
       if (!user) {
@@ -72,6 +102,7 @@ export class MyApp {
         this.afDB.collection("users").doc(user.uid).valueChanges().subscribe(result => {
           this.currentUser = result
         })
+        this.FCMGetToken(user.uid)
       }
       console.log(this.currentUser)
     })
@@ -81,32 +112,32 @@ export class MyApp {
   }
 
 
-  FCMTokenRefresh(){
-    firebase.messaging().onTokenRefresh(function() {
-      firebase.messaging().getToken()
-      .then(function(refreshedToken) {
-        console.log('Token refreshed.');
-      })
-      .catch(function(err) {
-        console.log('Unable to retrieve refreshed token ', err);
-      });
-    });
+
+  FCMGetToken(uid){
+      // this.afAuth.authState.subscribe(user => {
+        firebase.messaging().requestPermission().then( () => {
+          firebase.messaging().getToken().then(FCMToken => {
+            console.log('Notification permission granted.', 'UID: ' + uid, 'Token: ' + FCMToken);
+            this.afDB.collection('users').doc(uid).update({token: FCMToken})
+          })
+        })
+        .catch(err => {
+          console.log('Unable to get permission to notify.', err);
+        });
+      // })
   }
 
-  FCMGetToken(){
-    firebase.messaging().getToken()
-      .then(function(currentToken) {
-        if (currentToken) {
-            console.log(currentToken);
-            this.SENDFCM(currentToken)
-          } else {
-            // Show permission request.
-            console.log('No Instance ID token available. Request permission to generate one.');
-            // Show permission UI.
-          }
+  FCMTokenRefresh(){
+    firebase.messaging().onTokenRefresh(function() {
+      this.afAuth.authState.subscribe(user => {
+        firebase.messaging().getToken().then(FCMToken => {
+          console.log('Notification permission granted.', 'UID: ' + user.uid, 'Token: ' + FCMToken);
+          this.afDB.collection('users').doc(user.uid).update({token: FCMToken})
+        })
+        .catch(err => {
+          console.log('Unable to retrieve refreshed token ', err);
+        });
       })
-    .catch(function(err) {
-      console.log('An error occurred while retrieving token. ', err);
     });
   }
 
@@ -128,19 +159,6 @@ export class MyApp {
     }
   }
 
-  SENDFCM(userFcmToken){
-      const payload = {
-        notification: {
-          title: message.title,
-          body: message.body,
-          icon: "https://placeimg.com/250/250/people"
-        }
-      };
-
-    // const admin = require('firebase-admin');
-    admin.sendToDevice(userFcmToken, payload)
-
-  }
 
   openCreateRoomPage() {
     this.nav.setRoot(HomePage);
@@ -215,7 +233,7 @@ export class MyApp {
         photoURLCustom64: user.photoURL
       }
       this.afDB.collection("users").doc(user.uid).ref.get().then(userInfo => {
-          console.log("create profile function:", userInfo) 
+          console.log("Profile exist:", userInfo) 
         if (userInfo.exists==false){
           console.log("create profile") 
           this.afDB.collection("users").doc(user.uid).set(userData)

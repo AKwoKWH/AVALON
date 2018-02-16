@@ -19,11 +19,11 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAKC1QBxrKsYVoROebkrDfh17XnAe_F-Js",
-    authDomain: "avalon-991ac.firebaseapp.com",
-    databaseURL: "https://avalon-991ac.firebaseio.com",
-    projectId: "avalon-991ac",
-    storageBucket: "avalon-991ac.appspot.com",
+    apiKey: "AIzaSyDhPrYaymeIAeCCZEdwR3Zs5YYsjyTo_YA",
+    authDomain: "avalon-905dd.firebaseapp.com",
+    databaseURL: "https://avalon-905dd.firebaseio.com",
+    projectId: "avalon-905dd",
+    storageBucket: "avalon-905dd.appspot.com",
     messagingSenderId: "352103684706"
 }
 

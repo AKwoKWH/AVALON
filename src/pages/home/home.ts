@@ -170,11 +170,11 @@ presentAlert(Infomation) {
       // return
       // })
 
-      this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").ref.get().then(playerInfo => {
+      // this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").ref.get().then(playerInfo => {
 
-        playerInfo.forEach(player => {
-            this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.id).delete()
-        });
+      //   playerInfo.forEach(player => {
+      //       this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.id).delete()
+      //   });
 
         // console.log(playerInfo.data())
         // for (var key in playerInfo) {
@@ -185,7 +185,7 @@ presentAlert(Infomation) {
         //   }
         // }  
         // return
-      })
+      // })
 
 
       this.afDB.collection('games').doc('DEFAULT ROOM').delete();
