@@ -14,7 +14,7 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
 import * as admin from "firebase-admin";
 import request from 'request'
-import { LocalNotifications } from '@ionic-native/local-notifications';
+// import { LocalNotifications } from '@ionic-native/local-notifications';
 
 
 @Component({
