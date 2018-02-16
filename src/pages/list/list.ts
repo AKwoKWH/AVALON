@@ -94,7 +94,7 @@ export class ListPage {
           console.log("I AM THE LAST ONE")
           this.lastPlayer = true
           // this.FCMGetToken('I AM THE LAST ONE')
-        }
+        } else {this.lastPlayer = false}
 
         // if (count == this.RoomData.Number){ 
         //   console.log("START")
@@ -300,8 +300,9 @@ NotificationTesting() {
 //KICK===========================================================
   kickUser(player){
     this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.userID).delete();
-    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {
+    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {      
       for (var key in player) {
+        // console.log(player[key])
           if (player[key].status == 'SHOW') {
             const userData = {status: 'READY'}
             this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player[key].userID).update(userData);
