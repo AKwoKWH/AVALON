@@ -92,7 +92,7 @@
             <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
           </span>
 
-          <span *ngIf="PlayerStatus=='SHOW'">
+          <span *ngIf="PlayerStatus=='SHOW' && TotalPlayer==RoomData.Number">
             <span *ngIf="MyRole.role=='Merlin'">
               <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">[RED]</span>
             </span>

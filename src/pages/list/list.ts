@@ -119,6 +119,7 @@ export class ListPage {
   checkStatus(){
     this.afAuth.authState.subscribe(user => {
       this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
+          console.log(playerInfo)
           if (playerInfo==null || !playerInfo){
             this.PlayerStatus = null;
             console.log('profile not in room', this.PlayerStatus)
@@ -298,8 +299,15 @@ NotificationTesting() {
 
 //KICK===========================================================
   kickUser(player){
-    console.log(player)
     this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.userID).delete();
+    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {
+      for (var key in player) {
+          if (player[key].status == 'SHOW') {
+            const userData = {status: 'READY'}
+            this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player[key].userID).update(userData);
+          }
+      }
+    })
   }
 //================================================================
 
