@@ -34,7 +34,7 @@ messaging.setBackgroundMessageHandler(payload=> {
     const notificationOptions = {
         body: payload.data.message,
         // body: "GameStart",
-        icon: '/firebase-logo.png'
+        // icon: '/firebase-logo.png'
     };
 
     return self.registration.showNotification(notificationTitle,notificationOptions);

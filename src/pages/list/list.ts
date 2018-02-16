@@ -285,6 +285,13 @@ NotificationTesting() {
 //poke===========================================================
   pokeUser(player){
     console.log(player)
+    //this check if node exist
+    // this.afDB.collection("users").doc(player.userID).ref.get().then(userInfo => {
+    //   console.log(userInfo.exists, userInfo)        
+    // })
+    // this.afDB.collection("users").doc('12345').ref.get().then(userInfo => {
+    //   console.log(userInfo.exists, userInfo)        
+    // })
 
     this.afDB.collection("users", ref => {
       return ref.where('userID', '==', player.userID)
