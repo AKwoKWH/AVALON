@@ -29,28 +29,33 @@
       </ion-item> 
 
       <ion-item>
-        <ion-label>梅林(知道邪惡方)</ion-label>
+        <ion-label>梅林Merlin(知道邪惡方)</ion-label>
         <ion-toggle [(ngModel)]="roomdata.Merlin" (ionChange)="GetRolesName()" disabled="true"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>奧伯倫(對邪惡方互不了解)</ion-label>
+        <ion-label>奧伯倫Oberon(對邪惡方互不了解)</ion-label>
         <ion-toggle [(ngModel)]="roomdata.Oberon" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>派西維爾(知道誰是梅林)</ion-label>
+        <ion-label>派西維爾Percival(知道誰是梅林)</ion-label>
         <ion-toggle [(ngModel)]="roomdata.Percival" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>莫德雷德(梅林不知道他)</ion-label>
+        <ion-label>莫德雷德Mordred(梅林不知道他)</ion-label>
         <ion-toggle [(ngModel)]="roomdata.Mordred" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
       <ion-item>
-        <ion-label>莫甘娜(以梅林的形象出現)</ion-label>
+        <ion-label>莫甘娜Morgana(以梅林形象出現)</ion-label>
         <ion-toggle [(ngModel)]="roomdata.Morgana" (ionChange)="GetRolesName()"></ion-toggle>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>蘭斯洛特Lancelot(知道對方)</ion-label>
+        <ion-toggle [(ngModel)]="roomdata.Lancelot" (ionChange)="GetRolesName()"></ion-toggle>
       </ion-item>
 
       <ion-item>

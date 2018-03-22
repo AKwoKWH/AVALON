@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
-import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { ErrorHandler, NgModule} from '@angular/core';
+import { IonicApp, IonicErrorHandler, IonicModule, NavParams } from 'ionic-angular';
+
+import { QRCodeModule } from 'angular2-qrcode';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
@@ -8,7 +10,6 @@ import { ListPage } from '../pages/list/list';
 import { LoginPage } from '../pages/login/login';
 import { ProfilePage } from '../pages/profile/profile';
 import { SubscriptionPage } from '../pages/subscription/subscription';
-
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -41,7 +42,8 @@ const firebaseConfig = {
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    QRCodeModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -53,10 +55,11 @@ const firebaseConfig = {
     SubscriptionPage
   ],
   providers: [
-    StatusBar,
+    StatusBar, 
     SplashScreen,
     AngularFireAuthModule,
     AngularFirestoreModule,
+    // NavParams,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

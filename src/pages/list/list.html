@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content nopadding>
 
 <ion-list>
   <span *ngIf="currentUser!=null" class="nopadding">
@@ -17,23 +17,38 @@
         <img src={{currentUser.photoURL}} (click)='AdminMode()'>
       </ion-avatar>
       <h1>{{currentUser.displayName}}</h1>
+
+          <!--<span *ngIf="PlayerStatus=='SHOW' && TotalPlayer==RoomData.Number">
+            <span *ngIf="(MyRole.side=='BLUE')">
+              <font color="blue">[{{MyRole.role}}]</font>
+            </span>
+            <span *ngIf="(MyRole.side=='RED')">
+              <font color="red">[{{MyRole.role}}]</font>
+            </span>
+          </span>-->
+
     </ion-item>
     </ion-list>
 
     <ion-item class="nopadding">
       <b><u>ROLES ({{TotalPlayer}}/{{RoomData.Number}}):</u></b>
-        <br>
-        <span *ngFor="let r of RoomData.RoleData">
-          <span *ngIf="r.side=='RED'"> 
-            <font color="red">{{r.role}};</font>
-          </span>
+      <br>
+      <span *ngFor="let r of RoomData.RoleData">
+        <span *ngIf="r.side=='RED'"> 
+          <font color="red">{{r.role}};</font>
         </span>
-        <br>
-        <span *ngFor="let r of RoomData.RoleData">
-          <span *ngIf="r.side=='BLUE'"> 
-            <font color="blue">{{r.role}};</font>
-          </span>
+      </span>
+      <br>
+      <span *ngFor="let r of RoomData.RoleData">
+        <span *ngIf="r.side=='BLUE'"> 
+          <font color="blue">{{r.role}};</font>
         </span>
+      </span>
+      
+      <!--<br><b><u>Selection:</u></b>-->
+      <br>
+      <font color="green">{{RoomData.Selection}}</font>
+
     </ion-item>
 
     <span *ngIf="PlayerStatus==null && TotalPlayer<RoomData.Number">
@@ -52,7 +67,7 @@
 
 
     <span *ngIf="PlayerStatus=='READY' && TotalPlayer<RoomData.Number">
-    <button ion-button block icon-start color="grey">
+    <button ion-button block icon-start color="colorgrey">
       <ion-icon name="log-in"></ion-icon>
        PENDIING OTHERS ......
     </button>
@@ -66,6 +81,23 @@
     </button>
     </span>
 
+    <span *ngIf="PlayerStatus=='SHOW' && TotalPlayer==RoomData.Number">
+    <button ion-button block outline icon-start color="colorgrey" (click)="DisplayRoles()">
+       YOUR ROLE: &nbsp; 
+        <span *ngIf="(DisplayRole==true)">
+          <span *ngIf="(MyRole.side=='BLUE')">
+            <font color="blue">[{{MyRole.role}}]</font>
+          </span>
+          <span *ngIf="(MyRole.side=='RED')">
+            <font color="red">[{{MyRole.role}}]</font>
+          </span>
+          &nbsp;... Clcik to Hide
+        </span>
+        <span *ngIf="(DisplayRole==false)">
+          [Click to Reveal]
+        </span>
+    </button>
+    </span>
 
 
 
@@ -86,57 +118,95 @@
         <ion-thumbnail item-start>
           <img src={{player.photoURL}}>
         </ion-thumbnail>
-          {{player.displayName}} 
+          {{player.displayName}}
           
           <span *ngIf="PlayerStatus!='SHOW'">
             <span *ngIf="(player.status!='READY') && (player.status!='SHOW')">[NOT READY]</span>
           </span>
 
-          <span *ngIf="PlayerStatus=='SHOW' && TotalPlayer==RoomData.Number">
-            <span *ngIf="MyRole.role=='Merlin'">
-              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">[RED]</span>
-            </span>
-            <span *ngIf="MyRole.role=='Percival'">
-              <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana')">[Merlin/Morgana]</span>
-            </span>
-            <span *ngIf="MyRole.role=='Servant'">
-              <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
+          <span *ngIf="(PlayerStatus=='SHOW') && (TotalPlayer==RoomData.Number) && (DisplayRole==true)">
+
+            <span *ngIf="(player.userID==currentUser.uid)">
+              <span *ngIf="(MyRole.side=='BLUE')">
+                <font color="blue">[{{MyRole.role}}]</font>
+              </span>
+              <span *ngIf="(MyRole.side=='RED')">
+                <font color="red">[{{MyRole.role}}]</font>
+              </span>
             </span>
 
-            <span *ngIf="RoomData.Assassin==false">
-              <span *ngIf="MyRole.role=='Mordred'">
-                <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
-              </span>
-              <span *ngIf="MyRole.role=='Minion'">
-                <span *ngIf="(player.PlayerRole.side=='RED' && player.PlayerRole.role!='Oberon')">[RED]</span>
-              </span>
-              <span *ngIf="MyRole.role=='Oberon'">
-                <span *ngIf="(player.PlayerRole.role!=MyRole.role)"></span>
-              </span>
-              <span *ngIf="MyRole.role=='Morgana'">
-                <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
+            <span *ngIf="(MyRole.role=='Merlin')">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Mordred')">
+                <font color="red">[RED]</font>
               </span>
             </span>
-            
+
+            <span *ngIf="(MyRole.role=='Percival')">
+              <span *ngIf="(player.PlayerRole.role=='Merlin')||(player.PlayerRole.role=='Morgana')">
+                <font color="green">[Merlin/Morgana]</font>
+              </span>
+            </span>
+
             <span *ngIf="MyRole.role=='Assassin'">
-              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">[RED]</span>
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">
+                <font color="red">[RED]</font>
+              </span>
+            </span>
+
+            <span *ngIf="(MyRole.role=='Lancelot') && (MyRole.side=='BLUE')">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role=='Lancelot')">
+                <font color="red">[Lancelot]</font>
+              </span>
             </span>
             
-            <span>
-              <span *ngIf="(player.userID==currentUser.uid)">[{{MyRole.role}}]</span>
+            <span *ngIf="(MyRole.role=='Lancelot') && (MyRole.side=='RED')">
+              <span *ngIf="(player.PlayerRole.side=='BLUE') && (player.PlayerRole.role=='Lancelot')">
+                <font color="blue">[Lancelot]</font>
+              </span>
             </span>
+
+            <span *ngIf="(MyRole.role=='Mordred') && (RoomData.Assassin==false)">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">
+                <font color="red">[RED]</font>
+              </span>
+            </span>
+
+            <span *ngIf="(MyRole.role=='Minion') && (RoomData.Assassin==false)">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">
+                <font color="red">[RED]</font>
+              </span>
+            </span>
+
+            <span *ngIf="(MyRole.role=='Morgana') && (RoomData.Assassin==false)">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">
+                <font color="red">[RED]</font>
+              </span>
+            </span>
+
+            <span *ngIf="(MyRole.role=='Lancelot') && (MyRole.side=='RED') && (RoomData.Assassin==false)">
+              <span *ngIf="(player.PlayerRole.side=='RED') && (player.PlayerRole.role!='Oberon')">
+                <font color="red">[RED]</font>
+              </span>
+            </span>
+
           </span>
       </ion-item>
+
       <ion-item-options side="right">
         <button ion-button color="secondary" (click)="pokeUser(player)">POKE</button>
         <button ion-button color="danger" (click)="kickUser(player)" *ngIf="adminUser==true" >KICK</button>
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
+
 <!--</span>-->
 
 
-
+  <ion-list text-center *ngIf="TotalPlayer<RoomData.Number">     
+    <hr>
+    <p>Invite people to join the game:</p>
+    <qr-code [value]="'https://avalon-905dd.firebaseapp.com/'" [size]="150"></qr-code>
+  </ion-list>      
 
 
 </ion-content>

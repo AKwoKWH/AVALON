@@ -57,43 +57,43 @@
       </button>
       <hr>
 
-      <!--<ion-list>      
-      <button menuClose ion-item (click)="openCreateRoomPage()">
-        DEFAULT ROOM
-      </button>
+
+
+      <!--<ion-list class="nopadding">      
+        <button menuClose detail-push ion-button full outline (click)="openRoomPage('DEFAULT ROOM')">
+          DEFAULT ROOM
+        </button>
       </ion-list>-->
 
-      <ion-list>      
-      <button menuClose detail-push ion-button full outline (click)="openRoomPage()">
-        DEFAULT ROOM
-      </button>
+
+      <ion-list class="nopadding" *ngFor="let room of RoomList">      
+        <button menuClose detail-push ion-button full outline (click)="openRoomPage(room.CreateTime)">
+          {{room.Name}}
+        </button>
       </ion-list>
 
-      <ion-list>      
-      <button ion-button detail-push full outline>
-        ROOM 1
-      </button>
-      </ion-list>
-
-      <ion-list>      
-      <button ion-button detail-push full outline>
-        ROOM 2
-      </button>
-      </ion-list>
 
 
       <ion-list text-center>      
-      <button ion-button round outline menuClose color="secondary" (click)="openCreateRoomPage()">
+      <button ion-button round outline menuClose color="secondary" (click)="openCreateRoomPage()"  (pan)="AdminUser()">
         + Create Room
       </button>
       </ion-list>
+
+      <hr>
+
+      <button ion-button block icon-start color="danger" (click)="DeleteAllRoom()" *ngIf="adminUser">
+         DELETE ALL ROOM
+      </button>
+
+
 
     </span>
 
   </ion-content>
 
 <ion-footer>
-     <span> AVALON (version:2.6.2) by Alex Kwok</span>
+     <span> AVALON (version:2.7.3) by Alex Kwok</span>
 </ion-footer>
 
 

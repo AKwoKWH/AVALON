@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { take } from 'rxjs/operators';
 import { AngularFirestoreDocument } from 'angularfire2/firestore';
+
+import { QRCodeModule } from 'angular2-qrcode';
+
 // import { AngularFirestoreCollection } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
@@ -21,15 +24,17 @@ import request from 'request'
 export class ListPage {
 
   currentUser = {displayName: 'LOADING....'};
-  RoomData = {Name: '' , RoleData: ''};
+  RoomData = {Name: '' , RoleData: '', Selection: ''};
   joingame = false;
   PlayerStatus = null;
   RoomPlayer;
   MyRole;
   TotalPlayer;
+  DisplayRole = true;
   admincounter = 0;
   lastPlayer = false
   adminUser = false
+  RoomID = 'DEFAULT ROOM'
   
 
   constructor(
@@ -39,6 +44,7 @@ export class ListPage {
     public afDB: AngularFirestore,
     // public http: Http
   ) {
+    // this.DisplayRoles
       afAuth.authState.subscribe(user => {
         if (!user) {this.currentUser = null}
         else {
@@ -54,9 +60,41 @@ export class ListPage {
         }
         // console.log(this.currentUser)
       })
-      this.GetRoomData()
-      this.checkStatus()
-      this.AssignRole()
+      // this.RoomID = this.navParams.get('RoomID')
+      // console.log(this.navParams.get('RoomID'))
+      //   if (this.navParams.get('RoomID')!=null){
+      //     console.log(this.navParams.get('RoomID'))
+      //   }else{
+      //     123
+      //   }
+
+      if (navParams.get("Room")!=undefined){
+        this.RoomID = navParams.get("Room")
+        this.GetRoomData()
+        this.checkStatus()
+        this.AssignRole()      
+      } else{
+        this.afDB.collection("games").valueChanges().subscribe(RoomInfo => {
+          for (var key in RoomInfo) {
+            if (RoomInfo.hasOwnProperty(key)) {
+              var ID = RoomInfo[key].CreateTime
+              // console.log(ID)
+              if (ID!='DEFAULT'){ 
+                this.RoomID = ID
+              } 
+            }
+          }
+          // console.log(this.RoomID)
+          this.GetRoomData()
+          this.checkStatus()
+          this.AssignRole()            
+        })      
+      }
+        
+        // this.GetRoomData()
+        // this.checkStatus()
+        // this.AssignRole()      
+
       //this.setdata()
       // this.Trigger()
 
@@ -67,12 +105,12 @@ export class ListPage {
 
   GetRoomData(){
     console.log("GetPlayerListCalled")
-    this.afDB.collection("games").doc('DEFAULT ROOM').valueChanges().subscribe(result => {
+    this.afDB.collection("games").doc(this.RoomID).valueChanges().subscribe(result => {
       console.log(result)
       this.RoomData = result      
     })
 
-    this.afDB.collection("games").doc('DEFAULT ROOM').collection('PLAYERS').valueChanges().subscribe(result => {
+    this.afDB.collection("games").doc(this.RoomID).collection('PLAYERS').valueChanges().subscribe(result => {
       // console.log(result)
       this.afAuth.authState.subscribe(user => {
       
@@ -118,7 +156,7 @@ export class ListPage {
 //CHECKSTATUS====================================================
   checkStatus(){
     this.afAuth.authState.subscribe(user => {
-      this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
+      this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
           console.log(playerInfo)
           if (playerInfo==null || !playerInfo){
             this.PlayerStatus = null;
@@ -214,7 +252,7 @@ NotificationTesting() {
 //SEND EVERYONE==================================================
 
   gameStartFCM(){
-    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {
+    this.afDB.collection("games").doc(this.RoomID).collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {
         for (var key in player) {
           this.afDB.collection("users").doc(player[key].userID).valueChanges().pipe(take(1)).subscribe(result => {      
             console.log('Send ' + result.displayName + ', Token: ' + result.token)
@@ -242,7 +280,7 @@ NotificationTesting() {
       
       // this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
       //   if (playerInfo==null){
-          this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(this.currentUser.uid).set(userData);
+          this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(this.currentUser.uid).set(userData);
     //       console.log('profile created:', userData);
     //       // this.AssignRole()
     //       return
@@ -256,12 +294,12 @@ NotificationTesting() {
 //SETDATA============================================================
 
   setdata(){
-    this.afDB.collection('roles').doc('10').set({Evil: 4, Servant: 6}).catch(err => console.log(err));
-    this.afDB.collection('roles').doc('9').set({Evil: 3, Servant: 6});
-    this.afDB.collection('roles').doc('8').set({Evil: 3, Servant: 5});
-    this.afDB.collection('roles').doc('7').set({Evil: 3, Servant: 4});
-    this.afDB.collection('roles').doc('6').set({Evil: 2, Servant: 4});
-    this.afDB.collection('roles').doc('5').set({Evil: 2, Servant: 3});
+    this.afDB.collection('roles').doc('10').set({Evil: 4, Servant: 6, Selection: '3➟4➟4➟5*➟5'}).catch(err => console.log(err));
+    this.afDB.collection('roles').doc('9').set({Evil: 3, Servant: 6, Selection: '3➟4➟4➟5*➟5'});
+    this.afDB.collection('roles').doc('8').set({Evil: 3, Servant: 5, Selection: '3➟4➟4➟5*➟5'});
+    this.afDB.collection('roles').doc('7').set({Evil: 3, Servant: 4, Selection: '2➟3➟3➟4*➟4'});
+    this.afDB.collection('roles').doc('6').set({Evil: 2, Servant: 4, Selection: '2➟3➟4➟3➟4'});
+    this.afDB.collection('roles').doc('5').set({Evil: 2, Servant: 3, Selection: '2➟3➟2➟3➟3'});
 
 
   }
@@ -276,6 +314,7 @@ NotificationTesting() {
     this.admincounter = this.admincounter +1
     if (this.admincounter>10){
       this.adminUser = true
+      this.setdata()
     }
   }
 
@@ -306,13 +345,13 @@ NotificationTesting() {
 
 //KICK===========================================================
   kickUser(player){
-    this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player.userID).delete();
-    this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {      
+    this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(player.userID).delete();
+    this.afDB.collection("games").doc(this.RoomID).collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(player => {      
       for (var key in player) {
         // console.log(player[key])
           if (player[key].status == 'SHOW') {
             const userData = {status: 'READY'}
-            this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(player[key].userID).update(userData);
+            this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(player[key].userID).update(userData);
           }
       }
     })
@@ -330,7 +369,7 @@ NotificationTesting() {
       }
       // this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
       //   if (playerInfo.status=='JOIN'){
-          this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(this.currentUser.uid).update(userData);
+          this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(this.currentUser.uid).update(userData);
       //     return
       //   } 
       // })
@@ -350,7 +389,7 @@ NotificationTesting() {
       }
       // this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).valueChanges().subscribe(playerInfo => {
       //   if (playerInfo.status=='READY'){
-          this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(this.currentUser.uid).update(userData);
+          this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(this.currentUser.uid).update(userData);
       //     return
       //   }
       // })
@@ -359,19 +398,30 @@ NotificationTesting() {
   }
 //===============================================================
 
+//DISPLAYROLE====================================================
+  DisplayRoles(){
+    if (this.DisplayRole==true){
+      this.DisplayRole=false
+      console.log(this.DisplayRole)
+    } else {
+      this.DisplayRole=true
+      console.log(this.DisplayRole)
+    }
+  }
+//===============================================================
 
 
 //SETDATA=======================================================
   AssignRole(){
     console.log(this.RoomData)
-      this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').valueChanges().subscribe(playerInfo => {
+      this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').valueChanges().subscribe(playerInfo => {
       for (var key in playerInfo) {
           if (playerInfo.hasOwnProperty(key)) {
             var PlayerID = playerInfo[key].userID
             var MatchingKey = this.RoomData.RoleOrder[key]      
             var PlayerRole =  this.RoomData.RoleData[MatchingKey-1]    
             console.log(PlayerID, MatchingKey, PlayerRole);
-            this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(PlayerID).update({PlayerRole: PlayerRole});
+            this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(PlayerID).update({PlayerRole: PlayerRole});
           }
       }
       })
@@ -384,7 +434,7 @@ NotificationTesting() {
       this.afAuth.authState.subscribe(user => {
           var timestamp = new Date().getTime
           console.log (timestamp)
-          this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(user.uid).update({LoginTime: timestamp});
+          this.afDB.collection('games').doc(this.RoomID).collection('PLAYERS').doc(user.uid).update({LoginTime: timestamp});
       })
   }
 //==============================================================

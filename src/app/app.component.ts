@@ -1,7 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
+// import { NavParams } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { take } from 'rxjs/operators';
 
 import { HomePage } from '../pages/home/home';
 import { ListPage } from '../pages/list/list';
@@ -31,19 +33,26 @@ export class MyApp {
   };
   Gituser = false
   counter = 0
-
+  RoomList = null
+  admincounter = 0
+  adminUser = false
 
 
   constructor(
     public platform: Platform, 
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
+    // public navParams: NavParams,
     public afAuth: AngularFireAuth,
     public afDB: AngularFirestore
   ) {
 
     this.initializeApp();
+    this.GetRoomList()
+    this.admincounter = 0
+    this.adminUser = false
 
+    // this.RoomList = this.GetRoomList();
 
     // if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('firebase-messaging-sw.js').then(registration =>  {
@@ -92,8 +101,6 @@ export class MyApp {
               }
             });
           }
-
-
       
         // console.log(notificationTitle,notificationOptions)
         // var notification = new Notification(notificationTitle,notificationOptions);
@@ -169,12 +176,123 @@ export class MyApp {
   }
 
 
+
+
+  getOtherUserValues() {
+    return this.afDB.collection("games").snapshotChanges()
+      .map(changes => {
+        return { key: changes.key, ...changes.payload.val() };
+      });
+  }
+
+  getOtherUserValues2() {
+    return this.afDB.collection("games").snapshotChanges()
+      .map(changes => {
+        return { changes };
+      });
+  }
+
+
+  GetRoomList(){
+      this.afDB.collection("games").valueChanges().subscribe(RoomInfo => {
+        var roomlist = []
+        for (var key in RoomInfo) {
+          if (RoomInfo.hasOwnProperty(key)) {
+            var RoomName = RoomInfo[key].Name
+            var CreateTime = RoomInfo[key].CreateTime
+            console.log(RoomName)
+            if (CreateTime!='DEFAULT'){ 
+              roomlist.push({RoomID: key, Name: RoomName, CreateTime: CreateTime})
+            }
+          }
+        }
+        this.RoomList = roomlist
+    })      
+  }
+  
+
+
+  GetRoom(){
+    this.afDB.collection("games").valueChanges().subscribe(RoomList => {
+      // console.log("room", RoomList)
+      // this.RoomList = RoomList
+    })
+
+    this.RoomList = this.afDB.collection("games").snapshotChanges().map(actions => {
+      console.log(123)
+      return actions.map(a => {
+        const data = a.payload.doc.data();
+        const id = a.payload.doc.id;
+        console.log({ id, ...data })
+        return { id, ...data };
+      });
+    });
+
+// this.feedCollection = 
+// this.feedItem = this.afs.collection('col-challange').snapshotChanges().map(changes => {
+//       return changes.map(a => {
+//         //here you get the data without first name
+//         const data = a.payload.doc.data() as Feed;
+//         //get the signup_id for getting doc from coll-signup
+//         const signupId = data.signup_id;
+//         //get the related document
+//         return afs.collection('coll-signup').doc(signupId).snapshotChanges().take(1).map(actions => {
+//           return actions.payload.data();
+//         }).map(signup => {
+//           //export the data in feeds interface format
+//           return { firstName: signup.firstName, ...data };
+//         });
+//       })
+//     }).flatMap(feeds => Observable.combineLatest(feeds));
+
+
+  }
+
+
+
+  DeleteAllRoom(){
+    this.adminUser = false
+    this.admincounter = 0
+    this.afDB.collection("games").valueChanges().pipe(take(1)).subscribe(RoomInfo => {
+      for (var key in RoomInfo) {
+        if (RoomInfo.hasOwnProperty(key) ) {
+          var RoomID = RoomInfo[key].CreateTime
+          var RoomName = RoomInfo[key].Name
+          console.log(RoomID)
+          if (RoomID!='DEFAULT'){ 
+            this.afDB.collection('games').doc(RoomID).delete();
+            this.afDB.collection("games").doc(RoomID).collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(playerInfo => {
+              for (var key in playerInfo) {
+                if (playerInfo.hasOwnProperty(key)) {
+                  var PlayerID = playerInfo[key].userID
+                  console.log(RoomID, PlayerID)
+                  this.afDB.collection('games').doc(RoomID).collection('PLAYERS').doc(PlayerID).delete();
+                }
+              }  
+            })
+          }
+        }
+      }
+      this.nav.setRoot(ListPage, {Room: 'DEFAULT ROOM'});
+      this.nav.setRoot(HomePage);      
+    })
+  }
+
+
+
+  AdminUser(){
+  this.admincounter = this.admincounter +1
+    if (this.admincounter>200){
+      this.adminUser = true
+    }
+  }
+
   openCreateRoomPage() {
     this.nav.setRoot(HomePage);
   }
 
-  openRoomPage() {
-    this.nav.setRoot(ListPage);
+  openRoomPage(para) {
+    this.nav.setRoot(ListPage, {Room: para});
   }
 
 

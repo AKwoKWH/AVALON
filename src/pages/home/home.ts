@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController } from 'ionic-angular';
-
+import { NavController, AlertController } from 'ionic-angular';
+// import { NavParams } from 'ionic-angular';
+import { take } from 'rxjs/operators';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
@@ -13,7 +14,8 @@ import * as admin from "firebase-admin";
 })
 export class HomePage {
   currentUser = {displayName: 'LOADING....'};
-
+  timestamp = Date.now()
+  timesnap = this.timestamp - Math.floor(this.timestamp/10000)*10000
   roomdata = {
     Oberon:false,
     Percival: false,
@@ -21,15 +23,18 @@ export class HomePage {
     Mordred: false,
     Morgana: false,
     Assassin: false,
-    Name: 'DEFAULT ROOM',
-    Number: 8 
+    Lancelot: false,
+    Name: 'Room ' + this.timesnap,
+    Number: 8 ,
+    Selection: ''
   };
 
   RolesName;
+  Selection;
 
   constructor(
     public navCtrl: NavController, 
-    public navParams: NavParams,
+    // public navParams: NavParams,
     public afAuth: AngularFireAuth,
     public alertCtrl:AlertController,
     public afDB: AngularFirestore
@@ -79,6 +84,7 @@ presentAlert(Infomation) {
       
       var ServantNumber = result.Servant;
       var EvilNumber = result.Evil;
+      var Selection = result.Selection
       var addrole = []
 
 
@@ -112,6 +118,12 @@ presentAlert(Infomation) {
         // addrole = this.combineArray(addrole,{role: 'Morgana', side: 'RED'})
         addrole.push({role: 'Morgana', side: 'RED'})
       }
+      if (this.roomdata.Lancelot == true && EvilNumber > 0 && ServantNumber > 0) {
+        EvilNumber = EvilNumber - 1
+        ServantNumber = ServantNumber - 1
+        addrole.push({role: 'Lancelot', side: 'RED'})
+        addrole.push({role: 'Lancelot', side: 'BLUE'})
+      }
 
       var RED = 0
       var BLUE = 0
@@ -125,6 +137,7 @@ presentAlert(Infomation) {
         BLUE = BLUE + 1
       }
       this.RolesName = addrole
+      this.Selection = Selection
       console.log(addrole);
       resolve (addrole)
     })
@@ -132,6 +145,9 @@ presentAlert(Infomation) {
     })
   }
 //===============================================================
+
+
+
 
 
 
@@ -158,17 +174,32 @@ presentAlert(Infomation) {
       var RoleOrder = this.GenerateRandomOrder(this.roomdata.Number)
       var RoomDataAdj = this.combineArray(this.roomdata, {RoleOrder: RoleOrder})
       var RoomDataAdj = this.combineArray(RoomDataAdj, {RoleData: RoleData})
+      var RoomDataAdj = this.combineArray(RoomDataAdj, {Selection: this.Selection})
+      var RoomDataAdj = this.combineArray(RoomDataAdj, {CreateTime: ''+Math.floor(Date.now())})
       console.log(RoomDataAdj)
-      // this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().subscribe(playerInfo => {
-      //   for (var key in playerInfo) {
-      //     if (playerInfo.hasOwnProperty(key)) {
-      //       var PlayerID = playerInfo[key].userID
-      //       console.log(PlayerID);
-      //       this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(PlayerID).delete();
-      //     }
-      //   }  
-      // return
-      // })
+
+
+      //Search For Room with Same Name:
+      
+
+      //Remove Room
+      // this.afDB.collection('games').doc('DEFAULT ROOM').delete().catch(err => console.log(err));
+      this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").valueChanges().pipe(take(1)).subscribe(playerInfo => {
+        for (var key in playerInfo) {
+          if (playerInfo.hasOwnProperty(key)) {
+            var PlayerID = playerInfo[key].userID
+            console.log(PlayerID);
+            this.afDB.collection('games').doc('DEFAULT ROOM').collection('PLAYERS').doc(PlayerID).delete();
+          }
+        }  
+      return
+      })
+
+      //Create New Room
+      // this.afDB.collection("games").doc('DEFAULT ROOM').set(RoomDataAdj);
+      this.afDB.collection("games").doc(RoomDataAdj.CreateTime).set(RoomDataAdj);
+      this.presentAlert(RoomDataAdj)
+
 
       // this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").ref.get().then(playerInfo => {
 
@@ -186,11 +217,6 @@ presentAlert(Infomation) {
         // }  
         // return
       // })
-
-
-      this.afDB.collection('games').doc('DEFAULT ROOM').delete();
-      this.afDB.collection("games").doc('DEFAULT ROOM').set(RoomDataAdj);
-      this.presentAlert(RoomDataAdj)
       
       // console.log(this.roomdata)
     })
