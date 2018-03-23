@@ -3,6 +3,7 @@ import { ErrorHandler, NgModule} from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule, NavParams } from 'ionic-angular';
 
 import { QRCodeModule } from 'angular2-qrcode';
+// import { generate } from 'project-name-generator';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';

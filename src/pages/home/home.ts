@@ -6,7 +6,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFirestore } from 'angularfire2/firestore';
 import firebase from 'firebase';
 import * as admin from "firebase-admin";
-
+ 
 
 @Component({
   selector: 'page-home',
@@ -24,7 +24,7 @@ export class HomePage {
     Morgana: false,
     Assassin: false,
     Lancelot: false,
-    Name: 'Room ' + this.timesnap,
+    Name: this.RandomName(),
     Number: 8 ,
     Selection: ''
   };
@@ -57,7 +57,10 @@ export class HomePage {
   //     console.log(result)
   //   })
   // }
-
+RandomName(){
+  var projectNameGenerator = require("project-name-generator")
+  return projectNameGenerator().dashed.toUpperCase(); 
+}
 
 presentAlert(Infomation) {
   let alert = this.alertCtrl.create({
@@ -119,6 +122,7 @@ presentAlert(Infomation) {
         addrole.push({role: 'Morgana', side: 'RED'})
       }
       if (this.roomdata.Lancelot == true && EvilNumber > 0 && ServantNumber > 0) {
+        console.log("Lancelot")
         EvilNumber = EvilNumber - 1
         ServantNumber = ServantNumber - 1
         addrole.push({role: 'Lancelot', side: 'RED'})
@@ -199,7 +203,7 @@ presentAlert(Infomation) {
       // this.afDB.collection("games").doc('DEFAULT ROOM').set(RoomDataAdj);
       this.afDB.collection("games").doc(RoomDataAdj.CreateTime).set(RoomDataAdj);
       this.presentAlert(RoomDataAdj)
-
+      this.roomdata.Name= this.RandomName()
 
       // this.afDB.collection("games").doc('DEFAULT ROOM').collection("PLAYERS").ref.get().then(playerInfo => {
 

@@ -29,7 +29,8 @@ export class MyApp {
   // CreateRoomPage: {title: string, component: any};
   currentUser = {
     displayName: 'LOADING....',
-    photoURLCustom64: null
+    photoURLCustom64: null,
+    NewName: null
   };
   Gituser = false
   counter = 0
@@ -120,7 +121,7 @@ export class MyApp {
         })
         this.FCMGetToken(user.uid)
       }
-      console.log(this.currentUser)
+      console.log(this.currentUser,user)
     })
 
     // this.CreateRoomPage = {title: 'Create Room', component: HomePage };
@@ -207,6 +208,7 @@ export class MyApp {
           }
         }
         this.RoomList = roomlist
+        console.log(this.RoomList)
     })      
   }
   
@@ -279,10 +281,23 @@ export class MyApp {
   }
 
 
+  UpdateName(uid,DefaultName) {
+    var NewName;
+    var person = prompt("Please enter your name:", DefaultName);
+    if (person == null || person == "") {
+        NewName = DefaultName;
+    } else {
+        NewName = person;
+    }
+    console.log(uid,DefaultName)
+    this.afDB.collection('users').doc(uid).update({NewName: NewName})
+    // this.afDB.collection("users").doc(user.uid).update({photoURLCustom64: ResizedImg})
+  }
+
 
   AdminUser(){
   this.admincounter = this.admincounter +1
-    if (this.admincounter>200){
+    if (this.admincounter>10){
       this.adminUser = true
     }
   }

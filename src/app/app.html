@@ -48,8 +48,11 @@
           <img src={{currentUser.photoURLCustom64}} *ngIf="currentUser.photoURLCustom64!=null">
           <input type="file" name="file" accept="image/*;capture=camera" ngModel (change)="ProfilePic($event)">
         </div>
-        <h2 text-center>{{currentUser.displayName}}</h2>
+        <!--<h2 text-center>{{currentUser.displayName}}</h2>-->
       </label>
+        <h2 text-center (click)="UpdateName(currentUser.userID,currentUser.displayName)" *ngIf="currentUser.NewName==null">{{currentUser.displayName}}</h2>
+        <h2 text-center (click)="UpdateName(currentUser.userID,currentUser.displayName)" *ngIf="currentUser.NewName!=null">{{currentUser.NewName}}</h2>
+
 
       <button ion-button block icon-start color="danger" (click)="Signout()">
         <ion-icon name="log-out"></ion-icon>
@@ -75,7 +78,7 @@
 
 
       <ion-list text-center>      
-      <button ion-button round outline menuClose color="secondary" (click)="openCreateRoomPage()"  (pan)="AdminUser()">
+      <button ion-button round outline menuClose color="secondary" (click)="openCreateRoomPage()">
         + Create Room
       </button>
       </ion-list>
@@ -93,7 +96,7 @@
   </ion-content>
 
 <ion-footer>
-     <span> AVALON (version:2.7.3) by Alex Kwok</span>
+     <span  (click)="AdminUser()" > AVALON (version:2.8.5) by Alex Kwok</span>
 </ion-footer>
 
 

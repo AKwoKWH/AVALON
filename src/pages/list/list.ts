@@ -50,11 +50,13 @@ export class ListPage {
         else {
           this.currentUser = user
           this.afDB.collection("users").doc(user.uid).valueChanges().subscribe(result => {
-            console.log(result)
             if(result!=null){
+              if (result.NewName!=null){
+                this.currentUser = this.combineArray(this.currentUser,{displayName:result.NewName})
+              }
               if (result.photoURLCustom64!=null){
-              this.currentUser = this.combineArray(user,{photoURL:result.photoURLCustom64})
-              }else { this.currentUser = user}
+                this.currentUser = this.combineArray(this.currentUser,{photoURL:result.photoURLCustom64})
+              }
             }
           })
         }
