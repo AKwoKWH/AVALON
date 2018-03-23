@@ -40,6 +40,7 @@ export class HomePage {
     public afDB: AngularFirestore
   ) {
       afAuth.authState.subscribe(user => {
+        this.currentUser = user
         if (!user) {this.currentUser = null}
         else {this.currentUser = user}
         console.log(this.currentUser)

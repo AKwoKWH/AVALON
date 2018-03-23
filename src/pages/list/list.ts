@@ -50,15 +50,32 @@ export class ListPage {
         else {
           this.currentUser = user
           this.afDB.collection("users").doc(user.uid).valueChanges().subscribe(result => {
-            if(result!=null){
-              if (result.NewName!=null){
-                this.currentUser = this.combineArray(this.currentUser,{displayName:result.NewName})
-              }
-              if (result.photoURLCustom64!=null){
-                this.currentUser = this.combineArray(this.currentUser,{photoURL:result.photoURLCustom64})
-              }
+            // this.currentUser = result
+            this.currentUser = this.combineArray(this.currentUser,{phoneNumber:result.phonenumber})
+
+            if (result.userID!=null){
+              this.currentUser = this.combineArray(this.currentUser,{uid:result.userID})
             }
+            if (result.NewName!=null){
+              this.currentUser = this.combineArray(this.currentUser,{displayName:result.NewName})
+            }
+            if (result.photoURLCustom64!=null){
+              this.currentUser = this.combineArray(this.currentUser,{photoURL:result.photoURLCustom64})
+            }
+            console.log(this.currentUser)
           })
+
+          // this.currentUser = user
+          // this.afDB.collection("users").doc(user.uid).valueChanges().subscribe(result => {
+          //   if(result!=null){
+          //     if (result.NewName!=null){
+          //       this.currentUser = this.combineArray(this.currentUser,{displayName:result.NewName})
+          //     }
+          //     if (result.photoURLCustom64!=null){
+          //       this.currentUser = this.combineArray(this.currentUser,{photoURL:result.photoURLCustom64})
+          //     }
+          //   }
+          // })
         }
         // console.log(this.currentUser)
       })
